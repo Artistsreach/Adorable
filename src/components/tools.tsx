@@ -64,43 +64,96 @@ export function ToolMessage({
         <div className="grid gap-2">
           {toolInvocation.args?.items?.map?.(
             (
-              item: { description: string; completed: boolean },
+              item: {
+                description: string;
+                completed: boolean;
+                context?: string;
+                subtasks?: { description: string; completed: boolean }[];
+              },
               index: number
             ) => (
-              <div key={index} className="flex items-center gap-3 px-4 py-1">
-                {/* Minimal sleek checkbox */}
-                <div className="relative flex-shrink-0">
-                  <div
+              <div key={index} className="flex flex-col gap-1 px-4 py-1">
+                <div className="flex items-center gap-3">
+                  {/* Minimal sleek checkbox */}
+                  <div className="relative flex-shrink-0">
+                    <div
+                      className={cn(
+                        "w-4 h-4 rounded border transition-all duration-200",
+                        item.completed
+                          ? "bg-black border-black"
+                          : "border-gray-300 hover:border-gray-400"
+                      )}
+                    >
+                      {item.completed && (
+                        <svg
+                          className="w-3 h-3 text-white absolute top-0.5 left-0.5"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      )}
+                    </div>
+                  </div>
+                  <span
                     className={cn(
-                      "w-4 h-4 rounded border transition-all duration-200",
-                      item.completed
-                        ? "bg-black border-black"
-                        : "border-gray-300 hover:border-gray-400"
+                      "flex-1",
+                      item.completed && "line-through text-gray-500"
                     )}
                   >
-                    {item.completed && (
-                      <svg
-                        className="w-3 h-3 text-white absolute top-0.5 left-0.5"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    )}
-                  </div>
+                    {item.description}
+                  </span>
                 </div>
-                <span
-                  className={cn(
-                    "flex-1",
-                    item.completed && "line-through text-gray-500"
-                  )}
-                >
-                  {item.description}
-                </span>
+                {item.context && (
+                  <div className="text-xs text-gray-500 ml-7">
+                    {item.context}
+                  </div>
+                )}
+                {item.subtasks && (
+                  <div className="flex flex-col gap-1 ml-7">
+                    {item.subtasks.map((subtask, subIndex) => (
+                      <div key={subIndex} className="flex items-center gap-3">
+                        {/* Minimal sleek checkbox */}
+                        <div className="relative flex-shrink-0">
+                          <div
+                            className={cn(
+                              "w-4 h-4 rounded border transition-all duration-200",
+                              subtask.completed
+                                ? "bg-black border-black"
+                                : "border-gray-300 hover:border-gray-400"
+                            )}
+                          >
+                            {subtask.completed && (
+                              <svg
+                                className="w-3 h-3 text-white absolute top-0.5 left-0.5"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            )}
+                          </div>
+                        </div>
+                        <span
+                          className={cn(
+                            "flex-1",
+                            subtask.completed && "line-through text-gray-500"
+                          )}
+                        >
+                          {subtask.description}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )
           )}
@@ -282,7 +335,10 @@ function ToolBlock(props: {
           props.toolInvocation.result?.isError &&
           props.toolInvocation.result?.content?.map(
             (content: { type: "text"; text: string }, i: number) => (
-              <CodeBlock key={i} className="overflow-scroll py-2">
+              <CodeBlock
+                key={(props.toolInvocation?.toolCallId ?? props.name) + i}
+                className="overflow-scroll py-2"
+              >
                 <CodeBlockCode
                   className="[&>pre]:py-0! py-2 text-red-500"
                   code={content.text}

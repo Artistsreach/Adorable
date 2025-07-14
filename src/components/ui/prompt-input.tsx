@@ -59,7 +59,7 @@ type PromptInputProps = {
 function PromptInput({
   className,
   isLoading = false,
-  maxHeight = 240,
+  maxHeight = 80,
   value,
   onValueChange,
   onSubmit,
@@ -144,7 +144,7 @@ function PromptInputTextarea({
       onFocus={props.onFocus}
       onBlur={props.onBlur}
       className={cn(
-        "text-primary min-h-[44px] w-full resize-none border-none bg-transparent shadow-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 text-base sm:text-sm",
+        "text-primary min-h-[22px] w-full resize-none border-none bg-transparent shadow-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 text-base sm:text-sm",
         className,
       )}
       rows={1}

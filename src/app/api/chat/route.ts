@@ -1,19 +1,14 @@
 import { getApp } from "@/actions/get-app";
 import { freestyle } from "@/lib/freestyle";
+import { getUserMessage } from "@/lib/message-prompt-utils";
 import { getAppIdFromHeaders } from "@/lib/utils";
-import { MCPClient } from "@mastra/mcp";
 import { builderAgent } from "@/mastra/agents/builder";
-import { deleteStream, getStream, setStream } from "@/lib/streams";
 import { CoreMessage } from "@mastra/core";
-
-// "fix" mastra mcp bug
-import { EventEmitter } from "events";
-
-EventEmitter.defaultMaxListeners = 1000;
+import { MCPClient } from "@mastra/mcp";
+import { deleteStream, getStream, setStream } from "@/lib/streams";
 
 export async function POST(req: Request) {
   const appId = getAppIdFromHeaders(req);
-
   if (!appId) {
     return new Response("Missing App Id header", { status: 400 });
   }
@@ -25,8 +20,8 @@ export async function POST(req: Request) {
 
   const existingStream = await getStream(appId);
   if (existingStream) {
-    const [stream1, stream2] = streams[appId].readable.tee();
-    streams[appId] = { readable: stream2, prompt: streams[appId].prompt };
+    const [stream1, stream2] = existingStream.readable.tee();
+    await setStream(appId, stream2, existingStream.prompt);
     return new Response(stream1, {
       headers: {
         "Content-Type": "text/event-stream",
@@ -57,15 +52,13 @@ export async function POST(req: Request) {
   const rootStream = new TransformStream();
 
   let fixCount = 0;
-  async function runAgent(prompt: Parameters<typeof builderAgent.stream>[0]) {
-    const stream = await builderAgent.stream(prompt, {
+  const runAgent = async (prompt: CoreMessage) => {
+    const stream = await builderAgent.stream([prompt], {
       threadId: appId,
       resourceId: appId,
       maxSteps: 100,
-      maxRetries: 0,
+      maxRetries: 3,
       maxTokens: 64000,
-
-      // experimental_continueSteps: true,
       toolsets,
       onError: async (error) => {
         await mcp.disconnect();
@@ -75,15 +68,16 @@ export async function POST(req: Request) {
         deleteStream(appId!);
         console.log("Finished with reason:", res.finishReason);
 
-        if (res.finishReason === "tool-calls" && fixCount < 10) {
+        if (
+          (res.finishReason === "tool-calls" ||
+            res.finishReason === "length") && // "length" typically covers max-steps and max-tokens
+          fixCount < 10
+        ) {
           fixCount++;
-          runAgent([
-            {
-              role: "user",
-              content: "continue",
-            },
-          ]);
-
+          runAgent({
+            role: "user",
+            content: "continue",
+          });
           return;
         }
 
@@ -92,23 +86,47 @@ export async function POST(req: Request) {
         if (!pageRes.ok && fixCount < 10) {
           fixCount++;
           console.log("the page errored");
-          runAgent([
-            {
-              role: "user",
-              content: "The page returned 500. Please fix it.",
-            },
-          ]);
+          runAgent({
+            role: "user",
+            content: "The page returned 500. Please fix it.",
+          });
           return;
         }
 
-        if (fixCount == 10) {
+        const consoleRes = await fetch(
+          `${ephemeralUrl}/__freestyle/console`
+        );
+        const consoleLogs = await consoleRes.json();
+        if (
+          consoleLogs.some((c: any) => c.level === "error") &&
+          fixCount < 10
+        ) {
+          fixCount++;
+          console.log("the page has console errors");
+          runAgent({
+            role: "user",
+            content: `The page has the following console errors: ${JSON.stringify(
+              consoleLogs
+            )}. Please fix them.`,
+          });
+          return;
+        }
+
+        if (fixCount === 10) {
           console.log("reached max fix count, will not retry anymore");
+          // Send a message to the user indicating that the agent could not resolve the issue.
+          const writer = rootStream.writable.getWriter();
+          writer.write(
+            new TextEncoder().encode(
+              `data: {"type":"text","text":"I've attempted to resolve the issue multiple times, but I'm still encountering problems. Please review the console for errors or try a different approach."}\n\n`
+            )
+          );
+          writer.releaseLock();
         } else {
           console.log("no detected errors. ending stream");
         }
 
         await mcp.disconnect();
-        // todo: better solution
         await rootStream.writable.abort();
         console.log("Stream ended");
       },
@@ -119,12 +137,12 @@ export async function POST(req: Request) {
     dataStream.pipeThrough(rootStream, {
       preventClose: true,
     });
-  }
+  };
 
-  runAgent(message.content);
+  runAgent(message);
 
   const [stream1, stream2] = rootStream.readable.tee();
-  await setStream(appId, stream2, message.content);
+  await setStream(appId, stream2, getUserMessage(message));
 
   return new Response(stream1, {
     headers: {
@@ -133,19 +151,4 @@ export async function POST(req: Request) {
       Connection: "keep-alive",
     },
   });
-}
-
-export async function GET(req: Request) {
-  const appId = getAppIdFromHeaders(req);
-  if (!appId) {
-    return new Response("Missing App Id header", { status: 400 });
-  }
-
-  return new Response(
-    JSON.stringify({
-      stream: streams[appId] && {
-        prompt: streams[appId].prompt,
-      },
-    })
-  );
 }

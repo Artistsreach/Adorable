@@ -19,6 +19,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { publishApp } from "@/actions/publish-app";
 import { useState } from "react";
 
@@ -31,6 +32,7 @@ interface ShareButtonProps {
 export function ShareButton({ className, domain, appId }: ShareButtonProps) {
   // The domain may be undefined if no previewDomain exists in the database
   const [isPublishing, setIsPublishing] = useState(false);
+  const [appName, setAppName] = useState("");
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard
@@ -48,6 +50,7 @@ export function ShareButton({ className, domain, appId }: ShareButtonProps) {
       setIsPublishing(true);
       await publishApp({
         appId: appId,
+        name: appName,
       });
       toast.success("Latest version published successfully!");
     } catch (error) {
@@ -81,6 +84,17 @@ export function ShareButton({ className, domain, appId }: ShareButtonProps) {
         </DialogHeader>
 
         <div className="flex flex-col space-y-6 mt-4">
+          <div>
+            <Label htmlFor="app-name" className="mb-2 block">
+              App Name
+            </Label>
+            <Input
+              id="app-name"
+              placeholder="my-awesome-app"
+              value={appName}
+              onChange={(e) => setAppName(e.target.value)}
+            />
+          </div>
           {domain ? (
             <>
               <div>

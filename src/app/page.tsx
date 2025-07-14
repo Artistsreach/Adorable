@@ -7,9 +7,8 @@ import {
   PromptInputTextarea,
   PromptInputActions,
 } from "@/components/ui/prompt-input";
-import { FrameworkSelector } from "@/components/framework-selector";
+import { FrameworkSelectorGroup } from "@/components/framework-selector-group";
 import Image from "next/image";
-import LogoSvg from "@/logo.svg";
 import { useEffect, useState as useReactState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { ExampleButton } from "@/components/ExampleButton";
@@ -32,11 +31,11 @@ export default function Home() {
   const [placeholderText, setPlaceholderText] = useState("");
   const fullPlaceholder = "I want to build";
   const exampleIdeas = [
-    "a dog food marketplace",
-    "a personal portfolio website for my mother's bakery",
-    "a B2B SaaS for burrito shops to sell burritos",
-    "a social network for coders to find grass to touch",
-    "a potato farm.🇮🇪 🇮🇪 🇮🇪            ",
+    "a real-time collaborative whiteboard",
+    "an AI-powered content summarizer",
+    "a decentralized social media platform",
+    "a gamified habit tracker",
+    "a personalized e-commerce recommendation engine",
   ];
 
   // Ensure hydration is complete before starting typing animation
@@ -117,89 +116,73 @@ export default function Home() {
   return (
     <ViewTransition>
       <QueryClientProvider client={queryClient}>
-        <main className="min-h-screen p-4 relative">
+        <main className="min-h-screen p-4 relative main-bg">
           <div className="flex w-full justify-between items-center">
             <h1 className="text-lg font-bold flex-1 sm:w-80">
-              <a href="https://www.freestyle.sh">freestyle.sh</a>
+              <a></a>
             </h1>
-            <Image
-              className="dark:invert mx-2"
-              src={LogoSvg}
-              alt="Adorable Logo"
-              width={36}
-              height={36}
-            />
             <div className="flex items-center gap-2 flex-1 sm:w-80 justify-end">
               <UserButton />
             </div>
           </div>
-
           <div className="grid">
             <div className="w-full -mx-1 flex flex-col items-end col-start-1 col-end-1 row-start-1 row-end-1 opacity-20 select-none">
               {/* placeholder for background */}
             </div>
-            <div className="w-full max-w-lg px-4 sm:px-0 mx-auto flex flex-col items-center mt-16 sm:mt-24 md:mt-32 col-start-1 col-end-1 row-start-1 row-end-1 z-10">
-              <p className="text-neutral-600 text-center mb-6 text-3xl sm:text-4xl md:text-5xl font-bold">
-                Let AI Cook
+            <div className="w-full max-w-lg px-4 sm:px-0 mx-auto flex flex-col items-center mt-[-25px] sm:mt-[-1px] md:mt-[31px] col-start-1 col-end-1 row-start-1 row-end-1 z-10">
+              <Image
+                className="mx-2 mb-4"
+                src="https://utdrojtjfwjcvuzmkooj.supabase.co/storage/v1/object/public/content//Untitled%20design.png"
+                alt="Fresh Logo"
+                width={60}
+                height={60}
+              />
+              <p className="text-black text-center mb-6 text-3xl sm:text-4xl md:text-5xl font-bold">
+                What do you want to build?
               </p>
 
               <div className="w-full relative my-5">
-                <div className="relative w-full max-w-full overflow-hidden">
-                  <div className="w-full bg-accent rounded-md relative z-10 border transition-colors">
+                <div className="relative w-full max-w-full overflow-hidden rounded-3xl border border-blue-300/20 bg-white/80 backdrop-blur-sm shimmer-effect">
+                  <div className="w-full bg-white rounded-3xl relative z-10 transition-colors">
                     <PromptInput
-                      leftSlot={
-                        <FrameworkSelector
-                          value={framework}
-                          onChange={setFramework}
-                        />
-                      }
                       isLoading={isLoading}
                       value={prompt}
                       onValueChange={setPrompt}
                       onSubmit={handleSubmit}
-                      className="relative z-10 border-none bg-transparent shadow-none focus-within:border-gray-400 focus-within:ring-1 focus-within:ring-gray-200 transition-all duration-200 ease-in-out "
+                      className="relative z-10 border-none bg-white shadow-none focus-within:border-gray-400 focus-within:ring-1 focus-within:ring-gray-200 transition-all duration-200 ease-in-out "
                     >
                       <PromptInputTextarea
                         ref={placeholderRef}
                         placeholder={placeholderText ?? fullPlaceholder}
-                        className="min-h-[100px] w-full bg-transparent dark:bg-transparent backdrop-blur-sm pr-12"
+                        className="min-h-[100px] w-full bg-white dark:bg-white pr-12 text-black placeholder:text-gray-500"
                         onBlur={() => {}}
                       />
                       <PromptInputActions>
                         <Button
-                          variant={"ghost"}
                           size="sm"
                           onClick={handleSubmit}
                           disabled={isLoading || !prompt.trim()}
-                          className="h-7 text-xs"
+                          className="h-7 text-xs text-white w-full bg-blue-500 rounded-full"
                         >
                           <span className="hidden sm:inline">
-                            Start Creating ⏎
+                            Build It
                           </span>
-                          <span className="sm:hidden">Create ⏎</span>
+                          <span className="sm:hidden">Build It</span>
                         </Button>
                       </PromptInputActions>
                     </PromptInput>
                   </div>
                 </div>
               </div>
+              <FrameworkSelectorGroup
+                value={framework}
+                onChange={setFramework}
+                className="mt-4"
+              />
               <Examples setPrompt={setPrompt} />
-              <div className="mt-8 mb-16">
-                <a
-                  href="https://freestyle.sh"
-                  className="border rounded-md px-4 py-2 mt-4 text-sm font-semibold transition-colors duration-200 ease-in-out cursor-pointer w-full max-w-72 text-center block"
-                >
-                  <span className="block font-bold">
-                    By <span className="underline">freestyle.sh</span>
-                  </span>
-                  <span className="text-xs">
-                    JavaScript infrastructure for AI.
-                  </span>
-                </a>
-              </div>
             </div>
           </div>
-          <div className="border-t py-8 mx-0 sm:-mx-4">
+          <div className="py-8 mx-0 sm:-mx-4 mt-10">
             <UserApps />
           </div>
         </main>
@@ -213,24 +196,24 @@ function Examples({ setPrompt }: { setPrompt: (text: string) => void }) {
     <div className="mt-2">
       <div className="flex flex-wrap justify-center gap-2 px-2">
         <ExampleButton
-          text="Dog Food Marketplace"
-          promptText="Build a dog food marketplace where users can browse and purchase premium dog food."
+          text="Collaborative Whiteboard"
+          promptText="Build a real-time collaborative whiteboard application with drawing tools and user presence."
           onClick={(text) => {
             console.log("Example clicked:", text);
             setPrompt(text);
           }}
         />
         <ExampleButton
-          text="Personal Website"
-          promptText="Create a personal website with portfolio, blog, and contact sections."
+          text="AI Summarizer"
+          promptText="Develop an AI-powered tool that summarizes long articles or documents into concise bullet points."
           onClick={(text) => {
             console.log("Example clicked:", text);
             setPrompt(text);
           }}
         />
         <ExampleButton
-          text="Burrito B2B SaaS"
-          promptText="Build a B2B SaaS for burrito shops to manage inventory, orders, and delivery logistics."
+          text="Decentralized Social Media"
+          promptText="Create a decentralized social media platform using blockchain technology for secure and censorship-resistant communication."
           onClick={(text) => {
             console.log("Example clicked:", text);
             setPrompt(text);

@@ -10,10 +10,12 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Trash, ExternalLink, MoreVertical } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { deleteApp } from "@/actions/delete-app";
 import { toast } from "sonner";
+import Image from "next/image";
+import { searchPexelsPhotos } from "@/lib/pexels";
 
 type AppCardProps = {
   id: string;
@@ -25,6 +27,15 @@ type AppCardProps = {
 export function AppCard({ id, name, createdAt, onDelete }: AppCardProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      const url = await searchPexelsPhotos(name);
+      setImageUrl(url);
+    };
+    fetchImage();
+  }, [name]);
 
   const handleOpen = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -43,11 +54,25 @@ export function AppCard({ id, name, createdAt, onDelete }: AppCardProps) {
   };
 
   return (
-    <Card className="p-3 sm:p-4 border-b border rounded-md h-32 sm:h-36 relative w-full">
-      <Link href={`/app/${id}`} className="cursor-pointer block">
-        <CardHeader className="p-0">
-          <CardTitle className="text-sm sm:text-base truncate">{name}</CardTitle>
-          <CardDescription className="text-xs sm:text-sm">
+    <Card className="p-0 border-b border rounded-md h-32 sm:h-36 relative w-full overflow-hidden">
+      <Link href={`/app/${id}`} className="cursor-pointer block h-full w-full">
+        {imageUrl && (
+          <div className="absolute inset-0">
+            <Image
+              src={imageUrl}
+              alt={name}
+              layout="fill"
+              objectFit="cover"
+              className="z-0"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-black/50 z-10"></div>
+          </div>
+        )}
+        {/* This div applies the blur behind the text, strongest at the top and fading down */}
+        <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-black/70 to-transparent backdrop-blur-[2px] z-[15]"></div>
+        <CardHeader className="p-3 sm:p-4 relative z-20">
+          <CardTitle className="text-sm sm:text-base truncate text-white drop-shadow-md">{name}</CardTitle>
+          <CardDescription className="text-xs sm:text-sm text-white/80 drop-shadow-md">
             Created {createdAt.toLocaleDateString()}
           </CardDescription>
         </CardHeader>

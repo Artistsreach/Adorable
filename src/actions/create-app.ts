@@ -1,3 +1,4 @@
+
 "use server";
 
 import { getUser } from "@/auth/stack-auth";
@@ -6,12 +7,14 @@ import { db } from "@/lib/db";
 import { freestyle } from "@/lib/freestyle";
 import { memory } from "@/mastra/agents/builder";
 
+type AllowedBaseIds = "nextjs-dkjfgdf" | "vite-skdjfls" | "expo-lksadfp";
+
 export async function createApp({
   initialMessage,
   baseId,
 }: {
   initialMessage?: string;
-  baseId: string;
+  baseId: AllowedBaseIds;
 }) {
   const user = await getUser();
 

@@ -22,11 +22,11 @@ export default async function AppPage({
   const { id } = await params;
   const { unsentMessage } = await searchParams;
 
-  const stream = await getStream(id);
-  if (!unsentMessage && stream) {
+  const streamData = await getStream(id);
+  if (!unsentMessage && streamData?.prompt) {
     console.log("stream found for id:", id);
     return redirect(
-      `/app/${id}?unsentMessage=${encodeURIComponent(stream.prompt)}`,
+      `/app/${id}?unsentMessage=${encodeURIComponent(streamData.prompt)}`,
       RedirectType.replace
     );
   }

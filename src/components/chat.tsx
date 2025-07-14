@@ -12,8 +12,8 @@ export default function Chat(props: {
   appId: string;
   initialMessages: Message[];
   isLoading?: boolean;
-  topBar?: React.ReactNode;
   unsentMessage?: string;
+  collapseState?: number;
 }) {
   const { messages, handleSubmit, input, handleInputChange, status, append } =
     useChat({
@@ -73,17 +73,18 @@ export default function Chat(props: {
       className="flex flex-col h-full"
       style={{ transform: "translateZ(0)" }}
     >
-      {props.topBar}
-      <div
-        className="flex-1 overflow-y-auto flex flex-col space-y-6 min-h-0"
-        style={{ overflowAnchor: "auto" }}
-      >
-        <ChatContainer autoScroll>
-          {messages.map((message) => (
-            <MessageBody key={message.id} message={message} />
-          ))}
-        </ChatContainer>
-      </div>
+      {props.collapseState !== 2 && (
+        <div
+          className="flex-1 overflow-y-auto flex flex-col space-y-6 min-h-0"
+          style={{ overflowAnchor: "auto" }}
+        >
+          <ChatContainer autoScroll>
+            {messages.map((message) => (
+              <MessageBody key={message.id} message={message} />
+            ))}
+          </ChatContainer>
+        </div>
+      )}
       <div className="flex-shrink-0 p-3 transition-all bg-background md:backdrop-blur-sm">
         <PromptInputBasic
           input={input || ""}
@@ -174,3 +175,4 @@ function MessageBody({ message }: { message: Message }) {
     </div>
   );
 }
+

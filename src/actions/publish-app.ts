@@ -11,7 +11,13 @@ import {
   uniqueNamesGenerator,
 } from "unique-names-generator";
 
-export async function publishApp({ appId }: { appId: string }) {
+export async function publishApp({
+  appId,
+  name,
+}: {
+  appId: string;
+  name?: string;
+}) {
   const user = await getUser();
 
   if (!user) {
@@ -52,11 +58,16 @@ export async function publishApp({ appId }: { appId: string }) {
 
   let previewDomain = app.app.previewDomain;
   if (app.app.previewDomain === null) {
-    const domainPrefix = uniqueNamesGenerator({
-      dictionaries: [adjectives, animals],
-      separator: "",
-      length: 2,
-    });
+    const domainPrefix = name
+      ? name
+          .toLowerCase()
+          .replace(/\s+/g, "-")
+          .replace(/[^a-z0-9-]/g, "")
+      : uniqueNamesGenerator({
+          dictionaries: [adjectives, animals],
+          separator: "",
+          length: 2,
+        });
     const domain = `${domainPrefix}.${process.env.PREVIEW_DOMAIN}`;
 
     console.log("Generated domain:", domain);
