@@ -15,6 +15,7 @@ import { ExampleButton } from "@/components/ExampleButton";
 import { unstable_ViewTransition as ViewTransition } from "react";
 import { UserButton } from "@stackframe/stack";
 import { UserApps } from "@/components/user-apps";
+import { Loader2 } from "lucide-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
@@ -164,10 +165,14 @@ export default function Home() {
                           disabled={isLoading || !prompt.trim()}
                           className="h-7 text-xs text-white w-full bg-blue-500 rounded-full"
                         >
-                          <span className="hidden sm:inline">
-                            Build It
-                          </span>
-                          <span className="sm:hidden">Build It</span>
+                          {isLoading ? (
+                            <Loader2 className="animate-spin" size={16} />
+                          ) : (
+                            <>
+                              <span className="hidden sm:inline">Build It</span>
+                              <span className="sm:hidden">Build It</span>
+                            </>
+                          )}
                         </Button>
                       </PromptInputActions>
                     </PromptInput>

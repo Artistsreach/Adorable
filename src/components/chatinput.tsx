@@ -42,7 +42,7 @@ export function PromptInputBasic({
         <PromptInputTextarea
           placeholder={
             isGenerating
-              ? "Adorable is working..."
+              ? "Agent is working..."
               : "Type your message here..."
           }
           className="pr-10 bg-transparent dark:bg-transparent"
