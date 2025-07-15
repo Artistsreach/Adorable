@@ -20,7 +20,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "FreshFront",
   description: "AI App & Website Builder, Vibe Code Tool, Build Mobile Apps with No Code",
-  manifest: "/manifest.json",
+  icons: "https://utdrojtjfwjcvuzmkooj.supabase.co/storage/v1/object/public/content//Fficon.svg",
   viewport: {
     width: "device-width",
     initialScale: 1,
