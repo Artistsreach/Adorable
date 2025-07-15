@@ -32,7 +32,7 @@ export function TopBar({
       >
         <div className="h-12 flex items-center px-4 border-b border-gray-200 bg-background justify-between">
           <Link href={"/"}>
-            <img src="https://utdrojtjfwjcvuzmkooj.supabase.co/storage/v1/object/public/content//Untitled%20design%20(1).png" alt="logo" className="h-8" />
+            <img src="https://utdrojtjfwjcvuzmkooj.supabase.co/storage/v1/object/public/content//Fficon.svg" alt="logo" className="h-8" />
           </Link>
           <div className="flex-1" />
           <div className="flex items-center space-x-2">
