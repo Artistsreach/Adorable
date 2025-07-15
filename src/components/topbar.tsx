@@ -2,13 +2,13 @@
 
 import {
   ArrowUpRightIcon,
-  HomeIcon,
   ChevronDownIcon,
   ChevronUpIcon,
 } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
 import { Button } from "./ui/button";
+import { ApiButton } from "./api-button";
 
 export function TopBar({
   appName,
@@ -32,11 +32,12 @@ export function TopBar({
       >
         <div className="h-12 flex items-center px-4 border-b border-gray-200 bg-background justify-between">
           <Link href={"/"}>
-            <HomeIcon />
+            <img src="https://utdrojtjfwjcvuzmkooj.supabase.co/storage/v1/object/public/content//Untitled%20design%20(1).png" alt="logo" className="h-8" />
           </Link>
           <div className="flex-1" />
           <div className="flex items-center space-x-2">
             {children}
+            <ApiButton />
             <a target="_blank" href={codeServerUrl} className="hidden md:block">
               <Button size="sm" variant={"outline"}>
                 VS Code

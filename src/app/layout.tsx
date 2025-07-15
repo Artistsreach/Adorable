@@ -18,8 +18,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FreshFront",
-  description: "AI App Builder",
+  title: "Adorable",
+  description: "Open Source AI App Builder",
   manifest: "/manifest.json",
   viewport: {
     width: "device-width",

@@ -175,4 +175,3 @@ function MessageBody({ message }: { message: Message }) {
     </div>
   );
 }
-

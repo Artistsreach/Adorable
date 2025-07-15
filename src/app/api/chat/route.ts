@@ -20,8 +20,8 @@ export async function POST(req: Request) {
 
   const existingStream = await getStream(appId);
   if (existingStream) {
-    const [stream1, stream2] = existingStream.readable.tee();
-    await setStream(appId, stream2, existingStream.prompt);
+    const [stream1, stream2] = existingStream.tee();
+    await setStream(appId, stream2);
     return new Response(stream1, {
       headers: {
         "Content-Type": "text/event-stream",
@@ -68,11 +68,7 @@ export async function POST(req: Request) {
         deleteStream(appId!);
         console.log("Finished with reason:", res.finishReason);
 
-        if (
-          (res.finishReason === "tool-calls" ||
-            res.finishReason === "length") && // "length" typically covers max-steps and max-tokens
-          fixCount < 10
-        ) {
+        if (res.finishReason === "tool-calls" && fixCount < 10) {
           fixCount++;
           runAgent({
             role: "user",
@@ -114,14 +110,6 @@ export async function POST(req: Request) {
 
         if (fixCount === 10) {
           console.log("reached max fix count, will not retry anymore");
-          // Send a message to the user indicating that the agent could not resolve the issue.
-          const writer = rootStream.writable.getWriter();
-          writer.write(
-            new TextEncoder().encode(
-              `data: {"type":"text","text":"I've attempted to resolve the issue multiple times, but I'm still encountering problems. Please review the console for errors or try a different approach."}\n\n`
-            )
-          );
-          writer.releaseLock();
         } else {
           console.log("no detected errors. ending stream");
         }

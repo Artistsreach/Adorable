@@ -54,7 +54,7 @@ export function AppCard({ id, name, createdAt, onDelete }: AppCardProps) {
   };
 
   return (
-    <Card className="p-0 border-b border rounded-md h-32 sm:h-36 relative w-full overflow-hidden">
+    <Card className="p-0 border-b border border-opacity-40 rounded-xl h-32 sm:h-36 relative w-full overflow-hidden">
       <Link href={`/app/${id}`} className="cursor-pointer block h-full w-full">
         {imageUrl && (
           <div className="absolute inset-0">
@@ -63,7 +63,7 @@ export function AppCard({ id, name, createdAt, onDelete }: AppCardProps) {
               alt={name}
               layout="fill"
               objectFit="cover"
-              className="z-0"
+              className="z-0 opacity-85"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-black/50 z-10"></div>
           </div>

@@ -133,7 +133,7 @@ export default function Home() {
               <Image
                 className="mx-2 mb-4"
                 src="https://utdrojtjfwjcvuzmkooj.supabase.co/storage/v1/object/public/content//Untitled%20design.png"
-                alt="Fresh Logo"
+                alt="Adorable Logo"
                 width={60}
                 height={60}
               />

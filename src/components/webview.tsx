@@ -44,6 +44,13 @@ export default function WebView(props: {
     };
   }, []);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      devServerRef.current?.refresh();
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="flex flex-col overflow-hidden h-screen border-l transition-opacity duration-700 mt-[2px]">
       <Dialog
@@ -85,4 +92,3 @@ export default function WebView(props: {
     </div>
   );
 }
-
